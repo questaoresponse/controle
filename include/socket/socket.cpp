@@ -12,9 +12,8 @@
 #include <sstream>
 #include <map>
 #include <functional>
-#include "socket.h"
-#include "my.h"
-Event event;
+#include "define.h"
+
 bool conectado;
 int sockfd;
 std::string host;
@@ -51,7 +50,7 @@ void Socket::read_websocket_response() {
     }
     if (n==0){
         printf("tentando se conectar\n");
-        event.disconnect();
+        Socket::disconnect();
         if (conectado){
             conectado=false;
         }
@@ -61,7 +60,7 @@ void Socket::read_websocket_response() {
         if (!conectado){ 
             conectado=true;
         }
-        event.connect();
+        Socket::connection();
         buffer[n] = '\0';
         printf("Resposta WebSocket: %s\n", buffer);
     }
@@ -113,7 +112,7 @@ void Socket::data() {
         if (bytes_received==0){
             printf("conexao encerrada.\n");
             // Socket::emit("disconnect","desconectado");
-            event.disconnect();
+            Socket::disconnect();
             // conectado ? close(sockfd) : NULL;
             if (conectado){
                 conectado=false;
@@ -127,7 +126,7 @@ void Socket::data() {
         memcpy(charBuffer, buffer, sizeof(buffer));
         std::string resposta(charBuffer);
         resposta+="\n";
-        event.data(resposta);
+        Socket::message(resposta);
         resposta="";
         data();
     }
@@ -152,7 +151,7 @@ void Socket::connect_socket(){
         connect_socket();
     }else{
         // Socket::emit("connect","conectado");
-        event.connect();
+        Socket::connection();
         conectado=true;
         Socket::send_websocket_handshake();
         Socket::read_websocket_response();

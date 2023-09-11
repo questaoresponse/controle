@@ -2,22 +2,15 @@
 #include "../include/json/json.h"
 #include "../include/json/json.cpp"
 #include "../include/socket/socket.h"
-#include "../include/socket/socket.cpp"
-#include "../include/socket/my.h"
 #include <iostream>
 #include <map>
 #include <string>
 #include "functions.h"
-#include "functions.cpp"
-
 Def def;
-Event::Event(){
-
-}
-void Event::connect(){
+void Socket::connection(){
     printf("conectado");  
 }
-void Event::data(std::string data_str){
+void Socket::message(std::string data_str){
     Json json;
     std::map<std::string,std::string> data=json.parse(data_str);
     for (const auto& [chave, valor] : data) {
@@ -29,10 +22,16 @@ void Event::data(std::string data_str){
         def.clickar(std::stoi(data["x"]),std::stoi(data["y"]));
     }
     if (tipo=="rename"){
-        def.rename(data["inicio"],data["final"]);
+        def.rename(data["nome"],data["novo_nome"]);
+    }
+    if (tipo=="remove"){
+        def.remove(data["nome"]);
+    }
+    if (tipo=="move"){
+        def.move(data["caminho"],data["novo_caminho"]);
     }
 }
-void Event::disconnect(){
+void Socket::disconnect(){
     printf("desconectado");  
 }
 int main(){
