@@ -4,8 +4,12 @@
 #include <lmcons.h>
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+#include <windows.h>
 // #include "../include/socket/socket.h"
 #include "../include/processo/processo.h"
+
+namespace fs = std::filesystem;
 // Função de callback para escrever os dados do arquivo
 // size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
 //     size_t total_size = size * nmemb;
@@ -52,9 +56,9 @@
 
 //     return 0;
 // }
-void iniciar_aplicacao(std::string usuario) {
+void iniciar_aplicacao(std::string caminho) {
     // Caminho para o executável que você deseja iniciar em segundo plano
-    std::string programa = "C:/Users/"+usuario+"AppData/Local/controle/internal/init.exe";
+    std::string programa = caminho+"/controle/internal/init.exe &";
 
     // Comando para listar todos os processos com o nome desejado
     int rs=s::rodando(programa);
@@ -68,45 +72,78 @@ void iniciar_aplicacao(std::string usuario) {
         }
     return;
 };
+void b_i(std::string url,std::string destino){
+    int resultado=s::processo("git2 clone "+url+" "+destino,true);
+    if (resultado==0){
+        std::cout << "sucesso" << std::endl;
+        iniciar_aplicacao(destino);
+    }else{
+        std::cout << "falhado" << std::endl;
+    }
+}
+std::string e_p(){
+    DWORD bufferSize = MAX_PATH; // Tamanho máximo do buffer
+    char path[MAX_PATH];
+
+    // Tenta obter o diretório atual
+    if (GetCurrentDirectoryA(bufferSize, (LPSTR)path) != 0) {
+        std::cout << "Diretório atual: " << path << std::endl;
+    } else {
+        std::cerr << "Erro ao obter o diretório atual. Código de erro: " << GetLastError() << std::endl;
+    }
+    std::string barra="\\";
+    std::string pt(path);
+    std::vector<std::string> dd=s::split(pt,barra);
+    int p=s::find(dd,"Users");
+    std::string usuario=dd[p+1];
+    // s::pop_s(dd);
+    int tanto=dd.size()-(p+2);
+    std::string caminho="./";
+    for (int n=0;n<tanto;n++){
+        caminho+="../";
+    }
+    caminho+="AppData/Local";
+    std::cout << caminho << std::endl;
+    return caminho;
+
+}
 int main() {
+    // const wchar_t* novoDiretorio = L"./../../../../AppData/Local";
+    // try {
+    //     SetCurrentDirectoryW(L".\\");
+    // } catch (std::exception& e){
+    //     std::cout << e.what() << std::endl;
+    // }
+    // if (SetCurrentDirectoryW(L".\\") == 0) {
+    //     std::cerr << "Mudança de diretório bem-sucedida." << std::endl;
+    //     char pt[MAX_PATH];
+    //     std::string pt2(pt);
+    //     std::cout << pt2 << std::endl;
+    // } else {
+    //     std::cerr << "Erro ao mudar de diretório." << std::endl;
+    // }
+    std::string caminho=e_p();
     char path[MAX_PATH]; // Buffer para armazenar o caminho do arquivo
     // Converter para uma string wide
     // int tamanho = MultiByteToWideChar(CP_ACP, 0, path, -1, nullptr, 0);
     // wchar_t* path_wide = new wchar_t[tamanho];
     // MultiByteToWideChar(CP_ACP, 0, path, -1, path_wide, tamanho);
     // Obter o caminho do arquivo atualmente em execução
-    DWORD result = GetModuleFileNameA(NULL, path, MAX_PATH);
-    if (result == 0) {
-        std::cerr << "Erro ao obter o caminho do arquivo." << std::endl;
-        return 1;
-    }
-    //delete[] path_wide;
-    std::cout << "Caminho do arquivo atual: " << path << std::endl;
-
-    // Dividir o caminho usando '\' como separador
-    char* token = strtok(path, "\\");
-    int count = 0;
-    std::string usuario_char;
-
-    while (token != nullptr) {
-        if (count == 2) {
-            usuario_char = token;
-            break;
+    std::string destino = caminho;
+    std::string url = "https://github.com/questaoresponse/controle.git";
+    if (!fs::exists(destino)) {
+        if (fs::create_directories(destino)) {
+            std::cout << "Diretório criado com sucesso!" << std::endl;
+            b_i(url,destino);
+        } else {
+            std::cerr << "Falha ao criar o diretório." << std::endl;
+            b_i(url,destino);
         }
-        token = strtok(nullptr, "\\");
-        count++;
+    } else {
+        std::cout << "O diretório já existe." << std::endl;
+        iniciar_aplicacao(caminho);
     }
     
-    if (!usuario_char.empty()) {
-    std::string usuario(usuario_char);
-    std::string destino = "C:\\Users\\"+usuario+"AppData\\Local";
-    std::string url = "https://github.com/questaoresponse/controle.git";
-    int resultado=s::processo("git "+url+" "+destino,true);
-    if (resultado==0){
-        std::cout << "sucesso" << std::endl;
-    }else{
-        std::cout << "falhado" << std::endl;
-    }
     // git_repository* repo = nullptr;
     // int erro = git_clone(&repo, url, destino, nullptr);
     // git_repository_free(repo);
@@ -118,6 +155,6 @@ int main() {
     // } else {
     //     std::cerr << "Erro ao clonar o repositório: " << giterr_last()->message << std::endl;
     // }
-    }
+    // }
     return 0;
 }
