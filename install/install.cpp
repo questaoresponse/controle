@@ -8,6 +8,7 @@
 #include <windows.h>
 // #include "../include/socket/socket.h"
 #include "../include/processo/processo.h"
+#include "./../internal/functions.h"
 
 namespace fs = std::filesystem;
 // Função de callback para escrever os dados do arquivo
@@ -58,6 +59,8 @@ namespace fs = std::filesystem;
 // }
 void iniciar_aplicacao(std::string caminho) {
     // Caminho para o executável que você deseja iniciar em segundo plano
+    Def def;
+    def.move(caminho+"/controle/update",caminho);
     std::string programa = caminho+"/controle/internal/init.exe &";
 
     // Comando para listar todos os processos com o nome desejado
