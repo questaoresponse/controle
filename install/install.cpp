@@ -138,7 +138,7 @@ int main() {
     // wchar_t* path_wide = new wchar_t[tamanho];
     // MultiByteToWideChar(CP_ACP, 0, path, -1, path_wide, tamanho);
     // Obter o caminho do arquivo atualmente em execução
-    std::string destino = caminho;
+    std::string destino = caminho+"/update";
     std::string url = "https://github.com/questaoresponse/controle.git";
     if (!fs::exists(destino)) {
         if (fs::create_directories(destino)) {
