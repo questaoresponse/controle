@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "../include/processo/processo.h"
 int main() {
-    std::string nome = "./main.exe &";
+    std::string nome = "main.exe &";
     std::string nome_p="main.exe";
     int rs=s::rodando(nome_p);
     if (rs==1){

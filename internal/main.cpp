@@ -67,7 +67,7 @@ void verificar() {
         std::cout << "O commit local é o mesmo que o commit remoto." << std::endl;
     } else {
         std::cout << "O commit local não é o mesmo que o commit remoto." << std::endl;
-        s::processo("./../update/update.exe &");
+        s::processo("../update/update.exe &");
         exit(0);
     }
 
