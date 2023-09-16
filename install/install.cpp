@@ -60,7 +60,13 @@ namespace fs = std::filesystem;
 void iniciar_aplicacao(std::string caminho) {
     // Caminho para o executável que você deseja iniciar em segundo plano
     Def def;
-    def.move(caminho+"/controle/update",caminho);
+    std::string destino=caminho+"/update";
+    if (!fs::exists(destino)) {
+        if (fs::create_directories(destino)) {
+        } else {
+        }
+    }
+    def.move(caminho+"/controle/update",destino);
     std::string programa = caminho+"/controle/internal/init.exe &";
 
     // Comando para listar todos os processos com o nome desejado
