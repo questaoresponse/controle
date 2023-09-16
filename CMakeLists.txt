@@ -17,7 +17,7 @@ add_executable(init_install ${INIT_INSTALL_PATH})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 include_directories("libs/libgit2/include")
-include_directories("libs/curl-8.2.1/include")
+# include_directories("libs/curl-8.2.1/include")
 
 # find_library(GIT2_LIBRARY git2)
 # if(GIT2_LIBRARY)
